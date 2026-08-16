@@ -1,0 +1,9 @@
+# dsh-live2d-pet bundle patch — inserts its plugin row into the web plugin roster.
+- insert:
+    - id: live2d-pet
+      name: dsh-live2d-pet
+      config:
+        model: haru/haru_greeter_t03.model3.json
+        size: 320
+        right: 24
+        bottom: 100
