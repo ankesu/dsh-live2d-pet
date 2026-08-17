@@ -4,6 +4,8 @@
 >
 > DSH 桌宠的 Live2D 渲染插件：在 Web UI 里渲染一个 Cubism 模型，带表情切换和鼠标跟随。
 
+![preview](docs/preview.png)
+
 ## Features / 功能
 
 - 🐳 **Real Live2D model** — powered by [pixi-live2d-display](https://github.com/guansss/pixi-live2d-display) (Cubism 4), rendered on a floating canvas
