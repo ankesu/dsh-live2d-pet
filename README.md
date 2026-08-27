@@ -18,12 +18,12 @@ The bundled official **Haru** sample model ([Live2D Inc.](https://www.live2d.com
 
 The official **Tororo & Hijiki** cat sample models
 ([Live2D Inc.](https://www.live2d.com/en/learn/sample/tororo-hijiki/)) run as
-pets on the [`feat/tororo-hijiki`](https://github.com/ankesu/dsh-live2d-pet/tree/feat/tororo-hijiki)
+pets on the [`feat/tororo`](https://github.com/ankesu/dsh-live2d-pet/tree/feat/tororo)
 branch — cats with ear/tail/paw parameters, parameter-snapshot expressions
 (no exp3 files needed), and the sample's `Idle`/`Tap` motions:
 
 官方 **Tororo & Hijiki** 猫示例模型（© Live2D Inc.）在
-[`feat/tororo-hijiki`](https://github.com/ankesu/dsh-live2d-pet/tree/feat/tororo-hijiki)
+[`feat/tororo`](https://github.com/ankesu/dsh-live2d-pet/tree/feat/tororo)
 分支上作为宠物运行——猫有耳朵/尾巴/爪子参数、参数快照表情（无需 exp3 文件）、
 以及自带 Idle/Tap 动作：
 
@@ -34,7 +34,7 @@ branch — cats with ear/tail/paw parameters, parameter-snapshot expressions
 ![hijiki cat pet](docs/blackcat.png)
 
 > Switch to a branch for cat pets: / 切到分支即可用猫宠物：
-> - White cat **Tororo**: `git checkout feat/tororo-hijiki` → `pnpm build` → configure `model: tororo/tororo.model3.json`
+> - White cat **Tororo**: `git checkout feat/tororo` → `pnpm build` → configure `model: tororo/tororo.model3.json`
 > - Black cat **Hijiki**: `git checkout feat/hijiki` → `pnpm build` → configure `model: hijiki/hijiki.model3.json`
 > (both branches use the same parameter-snapshot client; only the model path differs)
 
