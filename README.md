@@ -4,6 +4,8 @@
 >
 > DSH 桌宠 Live2D 插件：在 Web UI 里渲染一个 Cubism 模型作为浮动桌宠，支持状态联动表情、鼠标跟随、拖拽摆位、顶栏一键开关。
 
+### 🐱 Haru/ 人型（默认分支）
+
 ![preview](docs/preview.png)
 
 The bundled official **Haru** sample model ([Live2D Inc.](https://www.live2d.com/)):
@@ -12,7 +14,7 @@ The bundled official **Haru** sample model ([Live2D Inc.](https://www.live2d.com
 
 ![haru sample](docs/sample-img-haru-greeter.jpg)
 
-### 🐱 Cat pets / 猫宠物（分支）
+### 🐱 Tororo Cat pets / 白猫宠物（分支）
 
 The official **Tororo & Hijiki** cat sample models
 ([Live2D Inc.](https://www.live2d.com/en/learn/sample/tororo-hijiki/)) run as
@@ -26,6 +28,8 @@ branch — cats with ear/tail/paw parameters, parameter-snapshot expressions
 以及自带 Idle/Tap 动作：
 
 ![tororo cat pet](docs/tororo-preview.png)
+
+### 🐱 Hijiki Cat pets / 黑猫宠物（分支）
 
 ![hijiki cat pet](docs/blackcat.png)
 
