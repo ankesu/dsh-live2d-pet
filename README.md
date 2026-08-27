@@ -83,13 +83,83 @@ happens to sit in the same utilities row):
 
 ## Install / 安装
 
-```bash
-# from a local checkout
-dsh plugin --profile web add link:/path/to/dsh-live2d-pet
+All install methods below were verified end-to-end in a clean profile (2026-08-28):
+haru from the npm registry, and each cat branch from GitHub — `pnpm install`
+runs a `prepare` script that builds `lib/client.js` automatically, and the
+bundled `cordis.patch.yml` already points at the right model. Zero extra config.
 
-# or from npm (once published)
-dsh plugin --profile web add dsh-live2d-pet
+以下安装方式均已在干净 profile 中完整实测（2026-08-28）：haru 走 npm registry，
+黑白猫走 GitHub 分支——`pnpm install` 会自动执行 `prepare` 构建 `lib/client.js`，
+包内 `cordis.patch.yml` 已默认指向对应模型，零额外配置。
+
+### Option A — npm registry (Haru, default branch) / npm 源安装（Haru 人型，默认）
+
+```bash
+# install / 安装
+dsh plugin --profile <name> add dsh-live2d-pet
+
+# or, in the profile dir directly / 或直接在 profile 目录里
+cd ~/.dsh/profiles/<name>
+pnpm add dsh-live2d-pet
 ```
+
+- Installs the latest published `dsh-live2d-pet` (haru model). Verified: `0.1.2`.
+- 安装最新发布版 `dsh-live2d-pet`（haru 模型）。已验证：`0.1.2`。
+- ⚠️ **If you previously installed an older version, `pnpm add` may keep the
+  stale lockfile entry (e.g. `0.1.1`). Pin the version to force the update:**
+  `pnpm add dsh-live2d-pet@0.1.2` (or delete `pnpm-lock.yaml` and re-install).
+- ⚠️ 若之前装过旧版，`pnpm add` 可能沿用旧 lock 条目（如 `0.1.1`）。指定版本强制更新：
+  `pnpm add dsh-live2d-pet@0.1.2`（或删掉 `pnpm-lock.yaml` 重装）。
+
+### Option B — GitHub branch: white cat Tororo / Git 分支：白猫 Tororo
+
+```bash
+cd ~/.dsh/profiles/<name>
+pnpm add "git+https://github.com/ankesu/dsh-live2d-pet.git#feat/tororo"
+```
+
+- White cat **Tororo** (cat client, `PARAM_*` params, parameter-snapshot expressions).
+  Verified: install + build + patch → tororo model, all good.
+- 白猫 **Tororo**（猫版 client，`PARAM_*` 参数 + 参数快照表情）。已验证：安装/构建/patch 全部正常。
+
+### Option C — GitHub branch: black cat Hijiki / Git 分支：黑猫 Hijiki
+
+```bash
+cd ~/.dsh/profiles/<name>
+pnpm add "git+https://github.com/ankesu/dsh-live2d-pet.git#feat/hijiki"
+```
+
+- Black cat **Hijiki** (same cat client, different model path). Verified.
+- 黑猫 **Hijiki**（同一猫版 client，不同模型路径）。已验证。
+
+### Option D — GitHub branch: main (Haru) / Git 分支：main（Haru）
+
+```bash
+cd ~/.dsh/profiles/<name>
+pnpm add "git+https://github.com/ankesu/dsh-live2d-pet.git#main"
+```
+
+- Same as the npm registry build, from source. Verified.
+- 与 npm registry 版相同，从源码装。已验证。
+
+### Notes for git-branch installs / Git 分支安装注意事项
+
+1. **Proxy** — GitHub fetches can stall without one. If installs hang, configure
+   your proxy (e.g. `npm config set proxy http://127.0.0.1:7897` / `https-proxy`),
+   or set `HTTP_PROXY`/`HTTPS_PROXY` env vars for the install command.
+   Git 拉取 GitHub 可能卡住。卡住时配代理（如 `npm config set proxy http://127.0.0.1:7897`
+   与 `https-proxy`），或在安装命令前设 `HTTP_PROXY`/`HTTPS_PROXY` 环境变量。
+2. **pnpm allowBuilds** — pnpm blocks the `prepare` build script by default
+   (supply-chain protection). If you see `ERR_PNPM_GIT_DEP_PREPARE_NOT_ALLOWED`,
+   add the exact line it prints to `pnpm-workspace.yaml` under `allowBuilds:`.
+   pnpm 默认拦截 `prepare` 构建脚本（供应链保护）。若报
+   `ERR_PNPM_GIT_DEP_PREPARE_NOT_ALLOWED`，把报错打印的那一行加到
+   `pnpm-workspace.yaml` 的 `allowBuilds:` 下即可。
+3. **Enable the pet** — after install, the pet does not show until enabled:
+   click the ✨ header button or run `localStorage.setItem('dsh-live2d-pet','1')`
+   in the browser console, then reload.
+   装完后宠物不会自动显示——点顶栏 ✨ 按钮或在浏览器 Console 执行
+   `localStorage.setItem('dsh-live2d-pet','1')`，然后刷新页面。
 
 Use a different profile by changing `--profile <name>` (e.g. `test`).
 
