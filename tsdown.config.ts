@@ -16,6 +16,11 @@ const PLATFORM_EXTERNALS = [
   '@deepseek-ai/dsh-client-locale',
   '@deepseek-ai/dsh-client-ui-settings',
   '@deepseek-ai/dsh-client-ui-slots',
+  // React must come from the DSH host module table (like dsh-emoji-wallet):
+  // an inlined second React instance breaks hooks in slots-rendered
+  // components (React error #321).
+  'react',
+  'react-dom',
 ]
 
 export default [

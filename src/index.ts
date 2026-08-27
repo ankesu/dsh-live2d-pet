@@ -37,7 +37,7 @@ export const inject = ['webServer']
 /** Default model path relative to assets/live2d/. */
 export const DEFAULT_MODEL = 'haru/haru_greeter_t03.model3.json'
 
-export function apply(ctx: Context, config: { model?: string; size?: number; right?: number; bottom?: number } = {}): void {
+export function apply(ctx: Context, config: { model?: string; size?: number; right?: number; bottom?: number; offsetX?: number; offsetY?: number } = {}): void {
   const model = config.model ?? DEFAULT_MODEL
   const root = packageRoot(import.meta.url)
 
@@ -106,7 +106,7 @@ export function apply(ctx: Context, config: { model?: string; size?: number; rig
           res.end()
           return
         }
-        const body = JSON.stringify({ model: `${LIVE2D_PREFIX}/${model}`, size: config.size ?? 320, right: config.right ?? 24, bottom: config.bottom ?? 20 })
+        const body = JSON.stringify({ model: `${LIVE2D_PREFIX}/${model}`, size: config.size ?? 320, right: config.right ?? 24, bottom: config.bottom ?? 20, offsetX: config.offsetX ?? 0, offsetY: config.offsetY ?? 0 })
         res.writeHead(200, { 'content-type': 'application/json; charset=utf-8', 'content-length': String(Buffer.byteLength(body)) })
         if (req.method === 'HEAD') {
           res.end()
