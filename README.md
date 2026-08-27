@@ -12,11 +12,31 @@ The bundled official **Haru** sample model ([Live2D Inc.](https://www.live2d.com
 
 ![haru sample](docs/sample-img-haru-greeter.jpg)
 
+### 🐱 Cat pets / 猫宠物（分支）
+
+The official **Tororo & Hijiki** cat sample models
+([Live2D Inc.](https://www.live2d.com/en/learn/sample/tororo-hijiki/)) run as
+pets on the [`feat/tororo-hijiki`](https://github.com/ankesu/dsh-live2d-pet/tree/feat/tororo-hijiki)
+branch — cats with ear/tail/paw parameters, parameter-snapshot expressions
+(no exp3 files needed), and the sample's `Idle`/`Tap` motions:
+
+官方 **Tororo & Hijiki** 猫示例模型（© Live2D Inc.）在
+[`feat/tororo-hijiki`](https://github.com/ankesu/dsh-live2d-pet/tree/feat/tororo-hijiki)
+分支上作为宠物运行——猫有耳朵/尾巴/爪子参数、参数快照表情（无需 exp3 文件）、
+以及自带 Idle/Tap 动作：
+
+![tororo cat pet](docs/tororo-preview.png)
+
+> Switch to the branch for cat pets: / 切到该分支即可用猫宠物：
+> `git checkout feat/tororo-hijiki` → `pnpm build` → configure
+> `model: tororo/tororo.model3.json` (or `hijiki/hijiki.model3.json`).
+
 ---
 
 ## Table of Contents / 目录
 
 - [Features / 功能](#features--功能)
+- [Cat pets (branch) / 猫宠物（分支）](#cat-pets--猫宠物分支)
 - [Install / 安装](#install--安装)
 - [Enable / 启用（必读）](#enable--启用必读)
 - [Configuration / 配置](#configuration--配置)
@@ -39,12 +59,16 @@ The bundled official **Haru** sample model ([Live2D Inc.](https://www.live2d.com
 | 🎬 **Idle motion + fidgets** | The model's idle motion runs constantly; random tap motions play as idle micro-antics | 常驻待机动作；空闲时随机播小动作（发呆/挠头） |
 | 🎛️ **Config-driven geometry** | Size / position / offsets come from `cordis.patch.yml` — tweak without rebuilding | 大小/位置/偏移全在 `cordis.patch.yml` 配置，改配置不用重编译 |
 | 🖱️ **Drag repositioning** | Drag the pet anywhere; the offset persists in `localStorage` (with a viewport sanity-clamp against off-screen bugs) | 可拖拽到任意位置，偏移持久化（带防怼出屏幕的钳制） |
-| 💾 **Toggle button & persistence** | A ✨ header button (next to the 💰 wallet) shows/hides the pet instantly; state survives refreshes & restarts | 顶栏 ✨ 按钮（钱包旁边）一键开关，状态跨刷新/重启保留 |
+| 💾 **Toggle button & persistence** | A ✨ header button (next to the [dsh-emoji-wallet](https://github.com/ankesu/dsh-emoji-wallet) 💰 button) shows/hides the pet instantly; state survives refreshes & restarts | 顶栏 ✨ 按钮（[dsh-emoji-wallet](https://github.com/ankesu/dsh-emoji-wallet) 钱包 💰 旁边）一键开关，状态跨刷新/重启保留 |
 | 🔗 **Session state linkage** | Watches the DSH conversation session — deep thinking / sleep / celebrate are time-driven | 监听 DSH 会话——深思考 / 睡觉 / 庆祝等按时间驱动 |
 
-The ✨ toggle button lives in the session header, right next to the 💰 wallet:
+The ✨ toggle button lives in the session header, right next to the 💰 wallet
+button from [dsh-emoji-wallet](https://github.com/ankesu/dsh-emoji-wallet)
+(an optional companion plugin — the pet works fine without it; the wallet just
+happens to sit in the same utilities row):
 
-顶栏 ✨ 开关按钮（会话头部，钱包 💰 旁边）：
+顶栏 ✨ 开关按钮（会话头部，[dsh-emoji-wallet](https://github.com/ankesu/dsh-emoji-wallet)
+钱包 💰 旁边——钱包是可选伴生插件，不装它宠物也完全正常，只是同一个顶栏行里挨着）：
 
 ![toggle button](docs/emoji.png)
 
