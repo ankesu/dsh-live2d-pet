@@ -27,6 +27,8 @@ branch — cats with ear/tail/paw parameters, parameter-snapshot expressions
 
 ![tororo cat pet](docs/tororo-preview.png)
 
+![hijiki cat pet](docs/blackcat.png)
+
 > Switch to a branch for cat pets: / 切到分支即可用猫宠物：
 > - White cat **Tororo**: `git checkout feat/tororo-hijiki` → `pnpm build` → configure `model: tororo/tororo.model3.json`
 > - Black cat **Hijiki**: `git checkout feat/hijiki` → `pnpm build` → configure `model: hijiki/hijiki.model3.json`
