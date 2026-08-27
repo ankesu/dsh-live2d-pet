@@ -10,6 +10,7 @@
     "src",
     "scripts",
     "!lib/*.map",
+    "docs",
     "cordis.patch.yml",
     "README.md",
     "LICENSE"
