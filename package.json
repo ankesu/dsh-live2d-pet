@@ -37,6 +37,7 @@
   },
   "scripts": {
     "build": "tsdown",
+    "prepare": "pnpm build",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
