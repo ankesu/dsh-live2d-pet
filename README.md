@@ -42,6 +42,12 @@ The bundled official **Haru** sample model ([Live2D Inc.](https://www.live2d.com
 | 💾 **Toggle button & persistence** | A ✨ header button (next to the 💰 wallet) shows/hides the pet instantly; state survives refreshes & restarts | 顶栏 ✨ 按钮（钱包旁边）一键开关，状态跨刷新/重启保留 |
 | 🔗 **Session state linkage** | Watches the DSH conversation session — deep thinking / sleep / celebrate are time-driven | 监听 DSH 会话——深思考 / 睡觉 / 庆祝等按时间驱动 |
 
+The ✨ toggle button lives in the session header, right next to the 💰 wallet:
+
+顶栏 ✨ 开关按钮（会话头部，钱包 💰 旁边）：
+
+![toggle button](docs/emoji.png)
+
 ---
 
 ## Install / 安装
