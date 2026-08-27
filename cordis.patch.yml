@@ -3,7 +3,9 @@
     - id: live2d-pet
       name: dsh-live2d-pet
       config:
-        model: haru/haru_greeter_t03.model3.json
-        size: 320
+        model: hijiki/hijiki.model3.json
+        size: 220
         right: 24
         bottom: 100
+        offsetX: 0
+        offsetY: 0
