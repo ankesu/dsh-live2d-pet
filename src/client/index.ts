@@ -32,21 +32,21 @@ const DRAG_KEY = 'dsh-live2d-pet-drag'
 /** Where the host serves the model config from (see src/index.ts). */
 const CONFIG_URL = '/pet/live2d/config'
 
-/** Activity phase → haru expression names (f00..f08, official sample set). */
+/** Activity phase → cat parameter-snapshot key (CAT_PARAM_EXPRESSIONS). */
 const PHASE_EXPRESSION: Record<string, string> = {
-  idle: 'f00', // neutral
-  waiting: 'f01', // mouth slightly open, expectant
-  thinking: 'f02', // knit brows + open mouth (concentration)
-  tool: 'f03', // knit brows + grin (working)
-  done: 'f04', // squint smile
-  failed: 'f00', // no sad face in the sample set → neutral
-  drag: 'f05', // big grin (playful while dragged)
-  deep: 'f02', // deep thinking reuses the concentration face
-  sleep: 'f08', // calm / relaxed
-  celebrate: 'f04', // happy smile
+  idle: 'idle',
+  waiting: 'idle', // no dedicated waiting face → neutral
+  thinking: 'thinking',
+  tool: 'tool',
+  done: 'done',
+  failed: 'failed',
+  drag: 'drag',
+  deep: 'thinking', // deep thinking reuses the thinking face
+  sleep: 'sleep',
+  celebrate: 'done', // celebrate reuses the happy face
 }
-/** hover → surprise expression (f06: wide eyes + raised brows). */
-const HOVER_EXPRESSION = 'f06'
+/** hover → surprise parameter snapshot (wide eyes + open mouth). */
+const HOVER_EXPRESSION = 'surprise'
 
 /** How long "done" stays visible after a turn finishes. */
 const DONE_MS = 3000
@@ -73,35 +73,109 @@ const TAP_MOTION_GROUP = 'Tap'
 /** Tool → motion group map (empty for haru; custom models may add entries). */
 const TOOL_MOTION: Record<string, string> = {}
 
-/** Load a persisted drag offset, dropping absurd leftovers (viewport clamp). */
+/**
+ * Drag offset is intentionally NOT persisted across restarts (2026-08-28):
+ * a leftover offset used to push the pet off-screen after a server restart
+ * (the viewport clamp alone was too loose — e.g. y=-900 passed |y|<=vh but
+ * still put the canvas above the viewport). Every boot starts at the default
+ * anchor position; any stale key is wiped so it can never resurrect a
+ * hidden pet.
+ */
 function loadDragOffset(): { x: number; y: number } {
   try {
-    const raw = window.localStorage?.getItem(DRAG_KEY)
-    if (!raw) return { x: 0, y: 0 }
-    const parsed = JSON.parse(raw)
-    if (typeof parsed?.x === 'number' && typeof parsed?.y === 'number') {
-      // Sanity clamp: a leftover absurd drag offset (e.g. from an old buggy
-      // drag) would push the pet off-screen entirely — detect and drop it.
-      const vw = window.innerWidth || 2000
-      const vh = window.innerHeight || 2000
-      if (Math.abs(parsed.x) <= vw && Math.abs(parsed.y) <= vh) return { x: parsed.x, y: parsed.y }
-      window.localStorage?.removeItem(DRAG_KEY)
-    }
+    window.localStorage?.removeItem(DRAG_KEY)
   } catch {
-    /* ignore malformed */
+    /* ignore */
   }
   return { x: 0, y: 0 }
 }
 
-function saveDragOffset(off: { x: number; y: number }): void {
-  try {
-    window.localStorage?.setItem(DRAG_KEY, JSON.stringify(off))
-  } catch {
-    /* ignore quota errors */
-  }
+function saveDragOffset(): void {
+  // Intentionally a no-op: drag offset does not survive restarts (see above).
 }
 
+/**
+ * Parameter-snapshot "expressions" for models without exp3 files (Tororo /
+ * Hijiki ship no Expressions). Each state is a static set of PARAM_* values
+ * applied directly to the core model. Values are guesses tuned against the
+ * bundled idle motion's keyframes — hand-tune in Live2D Cubism Viewer and
+ * update here (or convert into real .exp3.json files later).
+ * `null` → leave the parameter at its current (motion/physics) value.
+ */
+const CAT_PARAM_EXPRESSIONS: Record<string, Record<string, number | null>> = {
+  idle: {
+    PARAM_EYE_L_OPEN: null,
+    PARAM_EYE_R_OPEN: null,
+    PARAM_MOUTH_OPEN_Y: null,
+    PARAM_MOUTH_FORM: null,
+    PARAM_TAIL: null,
+    PARAM_EAR_L: null,
+    PARAM_EAR_R: null,
+  },
+  thinking: {
+    PARAM_EYE_L_OPEN: 0.5, // half-lidded
+    PARAM_EYE_R_OPEN: 0.5,
+    PARAM_MOUTH_OPEN_Y: 0.15, // slightly open
+    PARAM_TAIL: -0.3, // slow, curious
+  },
+  tool: {
+    PARAM_EYE_L_OPEN: 0.9,
+    PARAM_EYE_R_OPEN: 0.9,
+    PARAM_MOUTH_OPEN_Y: 0.1,
+    PARAM_TAIL: 0.5, // busy tail
+  },
+  done: {
+    PARAM_EYE_L_OPEN: 0.8,
+    PARAM_EYE_R_OPEN: 0.8,
+    PARAM_MOUTH_FORM: 0.4, // smile-ish
+    PARAM_TAIL: 0.7, // happy tail up
+  },
+  failed: {
+    PARAM_EYE_L_OPEN: 0.4,
+    PARAM_EYE_R_OPEN: 0.4,
+    PARAM_EAR_L: -0.4, // droopy ears
+    PARAM_EAR_R: -0.4,
+    PARAM_TAIL: -0.8, // tail down
+  },
+  drag: {
+    PARAM_EYE_L_OPEN: 0.9,
+    PARAM_EYE_R_OPEN: 0.9,
+    PARAM_MOUTH_OPEN_Y: 0.2,
+    PARAM_TAIL: 1, // startled tail
+  },
+  sleep: {
+    PARAM_EYE_L_OPEN: 0.15, // nearly closed
+    PARAM_EYE_R_OPEN: 0.15,
+    PARAM_MOUTH_OPEN_Y: 0.05,
+    PARAM_TAIL: 0.2, // relaxed curl
+  },
+  surprise: {
+    PARAM_EYE_L_OPEN: 1, // wide
+    PARAM_EYE_R_OPEN: 1,
+    PARAM_MOUTH_OPEN_Y: 0.3,
+    PARAM_TAIL: -0.5,
+  },
+}
+
+/**
+ * Apply an expression. If the name matches a CAT_PARAM_EXPRESSIONS key, write
+ * the parameter snapshot directly (models without exp3 files); otherwise fall
+ * back to the standard model.expression() path (models with exp3 files).
+ */
 function applyExpression(model: any, name: string): void {
+  const snap = CAT_PARAM_EXPRESSIONS[name]
+  if (snap) {
+    try {
+      for (const [id, value] of Object.entries(snap)) {
+        if (value !== null) {
+          model.internalModel.coreModel.setParameterValueById(id, value, 1)
+        }
+      }
+      return
+    } catch {
+      /* parameter ids vary; fall through to expression() */
+    }
+  }
   try {
     model.expression(name)
   } catch {
@@ -303,7 +377,7 @@ export function Live2DPet(props: { phase?: string; size?: number; toolName?: str
         off.x += e.clientX - dragState.startX
         off.y += e.clientY - dragState.startY
         dragState = null
-        saveDragOffset(off)
+        saveDragOffset() // no-op: position resets on next boot (see loadDragOffset)
         canvas.style.cursor = 'grab'
         setDragging(false)
       }
@@ -324,10 +398,12 @@ export function Live2DPet(props: { phase?: string; size?: number; toolName?: str
         mouseRef.current = { dx, dy }
         try {
           if (!motionActiveRef.current) {
-            m.internalModel.coreModel.setParameterValueById('ParamAngleX', dx * 24, 1)
+            // Tororo/Hijiki use the ALL-CAPS PARAM_* id convention (Cubism
+            // 2.1-era export); the generic haru build used ParamAngleX/Y.
+            m.internalModel.coreModel.setParameterValueById('PARAM_ANGLE_X', dx * 24, 1)
             // Screen Y grows downward but Live2D Y grows upward — negate the
             // vertical delta so the head/gaze follow the cursor correctly.
-            m.internalModel.coreModel.setParameterValueById('ParamAngleY', -dy * 18, 1)
+            m.internalModel.coreModel.setParameterValueById('PARAM_ANGLE_Y', -dy * 18, 1)
           }
         } catch {
           // Parameter ids vary per model; ignore unknown ones.
@@ -342,8 +418,8 @@ export function Live2DPet(props: { phase?: string; size?: number; toolName?: str
         if (!m2) return
         const { dx, dy } = mouseRef.current
         try {
-          m2.internalModel.coreModel.setParameterValueById('ParamEyeBallX', dx, 1)
-          m2.internalModel.coreModel.setParameterValueById('ParamEyeBallY', -dy, 1)
+          m2.internalModel.coreModel.setParameterValueById('PARAM_EYE_BALL_X', dx, 1)
+          m2.internalModel.coreModel.setParameterValueById('PARAM_EYE_BALL_Y', -dy, 1)
         } catch {
           /* ignore */
         }
