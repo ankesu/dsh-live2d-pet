@@ -73,32 +73,25 @@ const TAP_MOTION_GROUP = 'Tap'
 /** Tool → motion group map (empty for haru; custom models may add entries). */
 const TOOL_MOTION: Record<string, string> = {}
 
-/** Load a persisted drag offset, dropping absurd leftovers (viewport clamp). */
+/**
+ * Drag offset is intentionally NOT persisted across restarts (2026-08-28):
+ * a leftover offset used to push the pet off-screen after a server restart
+ * (the viewport clamp alone was too loose — e.g. y=-900 passed |y|<=vh but
+ * still put the canvas above the viewport). Every boot starts at the default
+ * anchor position; any stale key is wiped so it can never resurrect a
+ * hidden pet.
+ */
 function loadDragOffset(): { x: number; y: number } {
   try {
-    const raw = window.localStorage?.getItem(DRAG_KEY)
-    if (!raw) return { x: 0, y: 0 }
-    const parsed = JSON.parse(raw)
-    if (typeof parsed?.x === 'number' && typeof parsed?.y === 'number') {
-      // Sanity clamp: a leftover absurd drag offset (e.g. from an old buggy
-      // drag) would push the pet off-screen entirely — detect and drop it.
-      const vw = window.innerWidth || 2000
-      const vh = window.innerHeight || 2000
-      if (Math.abs(parsed.x) <= vw && Math.abs(parsed.y) <= vh) return { x: parsed.x, y: parsed.y }
-      window.localStorage?.removeItem(DRAG_KEY)
-    }
+    window.localStorage?.removeItem(DRAG_KEY)
   } catch {
-    /* ignore malformed */
+    /* ignore */
   }
   return { x: 0, y: 0 }
 }
 
-function saveDragOffset(off: { x: number; y: number }): void {
-  try {
-    window.localStorage?.setItem(DRAG_KEY, JSON.stringify(off))
-  } catch {
-    /* ignore quota errors */
-  }
+function saveDragOffset(): void {
+  // Intentionally a no-op: drag offset does not survive restarts (see above).
 }
 
 /**
@@ -384,7 +377,7 @@ export function Live2DPet(props: { phase?: string; size?: number; toolName?: str
         off.x += e.clientX - dragState.startX
         off.y += e.clientY - dragState.startY
         dragState = null
-        saveDragOffset(off)
+        saveDragOffset() // no-op: position resets on next boot (see loadDragOffset)
         canvas.style.cursor = 'grab'
         setDragging(false)
       }
